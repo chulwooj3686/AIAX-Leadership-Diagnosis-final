@@ -1,0 +1,8 @@
+{
+  "name": "진단자 버전 AI·AX 리더십 진단 피드백 대시보드 수정",
+  "description": "진단자에게만 보이는 AI·AX 리더십 역량 진단 설문 생성, 참가자 응답 및 4대 핵심 영역(USE, CHECK, SHARE, REDESIGN) 실시간 피드백 대시보드",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
