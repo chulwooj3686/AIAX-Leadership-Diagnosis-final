@@ -774,6 +774,77 @@
       color: var(--text-muted);
     }
 
+    /* 듀얼 비교 바 차트 (진단자 vs 전체평균) */
+    .dual-bars-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0 10px 0;
+      background: rgba(248, 250, 252, 0.75);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .dual-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dual-bar-label {
+      min-width: 105px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dual-bar-track {
+      flex: 1;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dual-bar-score {
+      min-width: 58px;
+      text-align: right;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .gap-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      line-height: 1;
+    }
+    .gap-pill.positive {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .gap-pill.negative {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .gap-pill.equal {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
     .bar-track {
       width: 100%;
       height: 14px;
@@ -1356,68 +1427,96 @@
          ========================================================================= -->
     <section id="screen3" class="screen-section" style="display: none;">
       
-      <!-- 대시보드 상단 헤더 배너 (분석 대상 표시) -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; background: var(--glass-card); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px 20px; box-shadow: var(--glass-shadow);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: var(--primary-gradient); color: #fff; font-size: 1rem;">📊</span>
+      <!-- 대시보드 상단 헤더 배너 (분석 대상 클래스 및 진단 당사자 선택) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 14px; background: var(--glass-card); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px 20px; box-shadow: var(--glass-shadow);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--primary-gradient); color: #fff; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);">📊</span>
           <div>
-            <div style="font-size: 0.8rem; color: var(--text-sub); font-weight: 600;">진단 분석 대상</div>
-            <div id="dashActiveClassName" style="font-size: 1.08rem; font-weight: 800; color: #0f172a;">전체 통합 진단 결과 분석</div>
+            <div style="font-size: 0.78rem; color: var(--text-sub); font-weight: 600;">진단 분석 대상 클래스</div>
+            <div id="dashActiveClassName" style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">전체 통합 진단 결과 분석</div>
           </div>
         </div>
-        <span class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.82rem; padding: 6px 14px; font-weight: 700; border-radius: 9999px;">
-          ⚡ 실시간 분석 피드백
-        </span>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.85); padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
+            <label for="dashRespondentFilter" style="font-size: 0.84rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap;">👤 분석 대상 진단자:</label>
+            <select id="dashRespondentFilter" class="form-select" style="width: auto; min-width: 170px; padding: 4px 8px; font-size: 0.86rem; height: 32px; font-weight: 600;" onchange="handleRespondentFilterChange()">
+              <!-- JS로 동적 렌더링 -->
+            </select>
+          </div>
+
+          <span class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.82rem; padding: 7px 14px; font-weight: 700; border-radius: 9999px;">
+            ⚡ 진단자 vs 전체 종합평균 비교 분석
+          </span>
+        </div>
       </div>
 
-      <!-- 요약 KPI 통계 카드 그리드 -->
-      <div class="dash-kpi-grid">
+      <!-- 요약 KPI 통계 카드 그리드 (진단자 점수 vs 전체 평균 비교) -->
+      <div class="dash-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         <div class="kpi-card">
           <span class="kpi-title">👥 총 응답자 수</span>
           <span class="kpi-value" id="kpiTotalResponses">0명</span>
           <span class="kpi-sub">실시간 수집 완료</span>
         </div>
 
-        <div class="kpi-card">
-          <span class="kpi-title">⭐ 종합 평균 점수</span>
-          <span class="kpi-value" id="kpiAvgScore" style="color: #6366f1;">0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span></span>
+        <div class="kpi-card" style="border-top: 3px solid #6366f1;">
+          <span class="kpi-title">🎯 진단자(당사자) 점수</span>
+          <span class="kpi-value" id="kpiMyScore" style="color: #4f46e5;">0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span></span>
+          <span class="kpi-sub" id="kpiMyScoreGap">전체 평균 대비 0.0점</span>
+        </div>
+
+        <div class="kpi-card" style="border-top: 3px solid #0891b2;">
+          <span class="kpi-title">🌐 전체 그룹 종합 평균</span>
+          <span class="kpi-value" id="kpiAvgScore" style="color: #0891b2;">0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span></span>
           <span class="kpi-sub" id="kpiScoreStatus">데이터 대기 중</span>
         </div>
 
         <div class="kpi-card">
-          <span class="kpi-title">🏆 최우수 역량 영역</span>
-          <span class="kpi-value" id="kpiTopDomain" style="color: #2563eb; font-size: 1.35rem;">-</span>
+          <span class="kpi-title">🏆 진단자 최우수 강점</span>
+          <span class="kpi-value" id="kpiTopDomain" style="color: #2563eb; font-size: 1.25rem;">-</span>
           <span class="kpi-sub" id="kpiTopDomainScore">최고 점수 영역</span>
         </div>
 
         <div class="kpi-card">
-          <span class="kpi-title">🌱 보완 집중 역량</span>
-          <span class="kpi-value" id="kpiLowDomain" style="color: #ea580c; font-size: 1.35rem;">-</span>
-          <span class="kpi-sub" id="kpiLowDomainScore">개선 우선순위</span>
+          <span class="kpi-title">🌱 진단자 보완 집중</span>
+          <span class="kpi-value" id="kpiLowDomain" style="color: #ea580c; font-size: 1.25rem;">-</span>
+          <span class="kpi-sub" id="kpiLowDomainScore">우선 개선 권장</span>
         </div>
       </div>
 
-      <!-- 5대 영역별 진단 평균 점수 및 가로 바 차트 -->
+      <!-- 5대 영역별 진단 점수 및 듀얼 비교 바 차트 -->
       <div class="glass-panel">
-        <h2 class="section-title">
-          <span>📊 AI 리더십 5대 핵심 역량 진단 점수</span>
-        </h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;">
+          <h2 class="section-title" style="margin-bottom: 0;">
+            <span>📊 AI 리더십 5대 핵심 역량 진단 점수 비교</span>
+          </h2>
+          <div style="display: flex; gap: 14px; font-size: 0.82rem; font-weight: 700; color: #475569;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #6366f1;"></span>
+              <span>👤 진단 당사자 점수</span>
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #94a3b8;"></span>
+              <span>🌐 전체 그룹 평균</span>
+            </span>
+          </div>
+        </div>
         <p class="section-desc">
-          1.팀원 AI 결과물 공정 평가, 2.AI-인간 판단 충돌 시 의사결정, 3.업무 방식 AI 재설계, 4.구성원 인적 관리 AI 접목, 5.디지털 격차 해소·평준화 등 5대 영역별 평균 분석 결과입니다.
+          1.결과물 공정 평가, 2.판단 충돌·의사결정, 3.업무 AI 재설계, 4.인적 관리 AI 접목, 5.격차 해소·평준화 등 5대 영역별로 <strong>진단 당사자의 점수와 전체 평균을 한눈에 비교</strong>합니다.
         </p>
 
         <!-- 영역별 바 차트 -->
         <div class="domain-chart-container" id="domainBarsContainer">
-          <!-- JS로 영역별 가로 막대 그래프 렌더링 -->
+          <!-- JS로 영역별 듀얼 가로 막대 그래프 렌더링 -->
         </div>
       </div>
 
       <!-- 5대 영역별 심층 분석 및 실천 Action Plan 카드 섹션 -->
       <div class="glass-panel">
         <h2 class="section-title">
-          <span>🎯 5대 영역별 심층 분석 및 실천 Action Plan</span>
+          <span>🎯 5대 영역별 심층 분석 및 진단자 맞춤형 실천 Action Plan</span>
         </h2>
-        <p class="section-desc">진단 점수에 기반한 역량 진단 요약 및 팀장으로서 현장에서 즉시 적용할 수 있는 구체적인 행동 가이드입니다.</p>
+        <p class="section-desc">전체 평균 대비 진단 당사자의 점수 위치를 분석하여, <strong>나의 강점 진단 및 팀장으로서 현장에서 즉시 실행할 실천 지침</strong>을 제공합니다.</p>
 
         <div id="domainActionPlansContainer" class="action-plans-grid">
           <!-- JS로 5대 영역별 맞춤형 진단 및 실천 가이드 카드 렌더링 -->
@@ -1427,19 +1526,21 @@
       <!-- 문항별 세부 평균 및 취약점 분석 -->
       <div class="glass-panel">
         <h2 class="section-title">
-          <span>🔍 20개 문항별 상세 분석 및 평균 랭킹</span>
+          <span>🔍 20개 문항별 상세 분석 및 진단자 vs 전체 평균 비교표</span>
         </h2>
-        <p class="section-desc">각 문항별 점수 분포를 통해 수강생들의 구체적인 강점과 집중 보완 영역을 한눈에 파악할 수 있습니다.</p>
+        <p class="section-desc">문항별 진단 당사자 응답 점수와 전체 수강생 평균을 대조하여 구체적인 강점 문항과 보완 문항을 확인합니다.</p>
 
         <div class="table-container">
           <table class="score-table">
             <thead>
               <tr>
-                <th style="width: 70px;">번호</th>
+                <th style="width: 65px;">번호</th>
                 <th style="width: 140px;">영역</th>
                 <th>진단 문항 내용</th>
-                <th style="width: 110px; text-align: center;">평균 점수</th>
-                <th style="width: 130px; text-align: center;">달성 수준</th>
+                <th style="width: 100px; text-align: center;">👤 진단자</th>
+                <th style="width: 100px; text-align: center;">🌐 전체평균</th>
+                <th style="width: 100px; text-align: center;">격차 (Gap)</th>
+                <th style="width: 110px; text-align: center;">진단자 판정</th>
               </tr>
             </thead>
             <tbody id="questionScoreTableBody">
@@ -1715,7 +1816,9 @@
       RESPONSES: "gam_ax_responses_v1",
       ACTIVE_CLASS_ID: "gam_ax_active_class_id_v1",
       USER_ROLE: "gam_ax_user_role_v1",
-      ADMIN_PASS: "gam_ax_admin_pass_v1"
+      ADMIN_PASS: "gam_ax_admin_pass_v1",
+      LAST_RESPONDENT_ID: "gam_ax_last_resp_id_v1",
+      SELECTED_RESPONDENT_ID: "gam_ax_selected_resp_id_v1"
     };
 
     // 현재 사용자 역할 ('admin': 운영자 3개 탭 / 'student': 교육생 2개 탭)
@@ -2526,6 +2629,8 @@
       const responses = getStoredResponses();
       responses.unshift(newResponse);
       localStorage.setItem(STORAGE_KEYS.RESPONSES, JSON.stringify(responses));
+      localStorage.setItem(STORAGE_KEYS.LAST_RESPONDENT_ID, newResponse.id);
+      localStorage.setItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID, newResponse.id);
 
       // 폼 초기화
       resetSurveyForm();
@@ -2558,16 +2663,29 @@
     }
 
     /* ==========================================================================
-       [화면 3 로직] 진단 결과 대시보드
+       [화면 3 로직] 진단 결과 대시보드 (진단 당사자 vs 전체 종합평균 비교 분석)
        ========================================================================== */
     /**
-     * 대시보드 전체 화면 렌더링 (KPI, 5대 영역 바 차트, 문항별 분석, 주관식 피드백)
+     * 대시보드 상단 진단자 셀렉트 박스 변경 시
+     */
+    function handleRespondentFilterChange() {
+      const select = document.getElementById("dashRespondentFilter");
+      if (select && select.value) {
+        localStorage.setItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID, select.value);
+        renderDashboard();
+        const selectedText = select.options[select.selectedIndex]?.text || "선택된 진단자";
+        showToast(`분석 대상 진단자가 [${selectedText}] (으)로 변경되었습니다.`);
+      }
+    }
+
+    /**
+     * 대시보드 전체 화면 렌더링 (KPI, 5대 영역 듀얼 바 차트, 맞춤 액션 플랜, 문항별 비교표)
      */
     function renderDashboard() {
       const filterSelect = document.getElementById("dashClassFilter");
       const selectedClassId = filterSelect ? filterSelect.value : "ALL";
 
-      // 상단 분석 대상 표시 텍스트 갱신
+      // 상단 분석 대상 클래스 표시 텍스트 갱신
       const activeClassElem = document.getElementById("dashActiveClassName");
       if (activeClassElem) {
         if (selectedClassId === "ALL") {
@@ -2587,10 +2705,17 @@
 
       const totalCount = filteredResponses.length;
 
-      // 1. KPI 카드 업데이트
+      // 1. KPI 카드 총 응답자 수 업데이트
       document.getElementById("kpiTotalResponses").innerText = `${totalCount}명`;
 
+      const respondentSelect = document.getElementById("dashRespondentFilter");
+
       if (totalCount === 0) {
+        if (respondentSelect) {
+          respondentSelect.innerHTML = `<option value="">응답 데이터 없음</option>`;
+        }
+        document.getElementById("kpiMyScore").innerHTML = `0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
+        document.getElementById("kpiMyScoreGap").innerText = "진단 데이터 대기 중";
         document.getElementById("kpiAvgScore").innerHTML = `0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
         document.getElementById("kpiScoreStatus").innerText = "응답 데이터 없음";
         document.getElementById("kpiTopDomain").innerText = "-";
@@ -2602,35 +2727,89 @@
         return;
       }
 
-      // 2. 20개 문항별 평균 점수 계산
+      // 2. 진단 당사자(분석 대상자) 식별 및 셀렉트 박스 동기화
+      const lastRespondentId = localStorage.getItem(STORAGE_KEYS.LAST_RESPONDENT_ID);
+      let selectedRespId = localStorage.getItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID);
+
+      // 선택된 응답자가 현재 필터 목록에 존재하는지 확인
+      let activeRespondent = filteredResponses.find(r => r.id === selectedRespId);
+      if (!activeRespondent) {
+        // 마지막 제출자가 목록에 있으면 우선 선택, 없으면 첫 번째 응답자 선택
+        activeRespondent = filteredResponses.find(r => r.id === lastRespondentId) || filteredResponses[0];
+        selectedRespId = activeRespondent ? activeRespondent.id : null;
+        if (selectedRespId) {
+          localStorage.setItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID, selectedRespId);
+        }
+      }
+
+      if (respondentSelect) {
+        respondentSelect.innerHTML = filteredResponses.map(r => {
+          const isLatest = (r.id === lastRespondentId);
+          const isSelected = (r.id === activeRespondent.id);
+          const labelPrefix = isLatest ? "★ [최근진단] " : "";
+          return `<option value="${r.id}" ${isSelected ? "selected" : ""}>${labelPrefix}${escapeHtml(r.respondentName)} (${escapeHtml(r.respondentDept || '일반')})</option>`;
+        }).join("");
+      }
+
+      // 3. 20개 문항별 전체 평균 및 진단자 개별 점수 계산
       const questionAverages = {};
+      const myQuestionScores = {};
+
       ASSESSMENT_QUESTIONS.forEach(q => {
         let sum = 0;
         filteredResponses.forEach(r => {
           sum += (r.answers && r.answers[q.id]) ? Number(r.answers[q.id]) : 0;
         });
         questionAverages[q.id] = (sum / totalCount);
+        myQuestionScores[q.id] = (activeRespondent.answers && activeRespondent.answers[q.id])
+          ? Number(activeRespondent.answers[q.id])
+          : questionAverages[q.id];
       });
 
-      // 3. 5대 핵심 영역별 평균 계산
+      // 4. 5대 핵심 영역별 전체 평균 및 진단자 개별 평균 계산
       const domainAverages = {};
+      const myDomainScores = {};
       let totalOverallSum = 0;
+      let totalMyOverallSum = 0;
       const domainKeys = Object.keys(DOMAIN_INFO);
 
       domainKeys.forEach(domainKey => {
         const qNums = DOMAIN_INFO[domainKey].questions;
         let dSum = 0;
+        let myDSum = 0;
         qNums.forEach(num => {
           dSum += (questionAverages[num] || 0);
+          myDSum += (myQuestionScores[num] || 0);
         });
         const dAvg = dSum / qNums.length;
+        const myDAvg = myDSum / qNums.length;
+
         domainAverages[domainKey] = dAvg;
+        myDomainScores[domainKey] = myDAvg;
+
         totalOverallSum += dAvg;
+        totalMyOverallSum += myDAvg;
       });
 
-      const overallAvg = (totalOverallSum / domainKeys.length).toFixed(2);
-      document.getElementById("kpiAvgScore").innerHTML = `${overallAvg} <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
-      
+      const overallAvg = Number((totalOverallSum / domainKeys.length).toFixed(2));
+      const myOverallAvg = Number((totalMyOverallSum / domainKeys.length).toFixed(2));
+      const overallGap = Number((myOverallAvg - overallAvg).toFixed(2));
+
+      // 진단자 점수 KPI 업데이트
+      document.getElementById("kpiMyScore").innerHTML = `${myOverallAvg.toFixed(2)} <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
+      const myGapElem = document.getElementById("kpiMyScoreGap");
+      if (myGapElem) {
+        if (overallGap > 0) {
+          myGapElem.innerHTML = `<span style="color: #16a34a; font-weight: 700;">전체 대비 +${overallGap.toFixed(2)}점 상회 ▲</span> (${escapeHtml(activeRespondent.respondentName)})`;
+        } else if (overallGap < 0) {
+          myGapElem.innerHTML = `<span style="color: #dc2626; font-weight: 700;">전체 대비 ${overallGap.toFixed(2)}점 보완 권장 ▼</span> (${escapeHtml(activeRespondent.respondentName)})`;
+        } else {
+          myGapElem.innerHTML = `<span style="color: #475569; font-weight: 700;">전체 평균과 동일 ●</span> (${escapeHtml(activeRespondent.respondentName)})`;
+        }
+      }
+
+      // 전체 평균 KPI 업데이트
+      document.getElementById("kpiAvgScore").innerHTML = `${overallAvg.toFixed(2)} <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
       let statusText = "기초 도입 단계";
       if (overallAvg >= 4.2) statusText = "🌟 선도적 AI 혁신 리더십 수준";
       else if (overallAvg >= 3.6) statusText = "🚀 활발한 실무 적용 수준";
@@ -2638,58 +2817,71 @@
       else statusText = "⚠️ 집중 교육 및 역량 강화 필요";
       document.getElementById("kpiScoreStatus").innerText = statusText;
 
-      // 최우수 및 보완 영역 도출
-      let topDomainKey = domainKeys[0];
-      let lowDomainKey = domainKeys[0];
-      let maxScore = -1;
-      let minScore = 999;
+      // 진단자 기준 최우수 강점 및 보완 집중 영역 도출
+      let myTopDomainKey = domainKeys[0];
+      let myLowDomainKey = domainKeys[0];
+      let myMaxScore = -1;
+      let myMinScore = 999;
 
       domainKeys.forEach(key => {
-        if (domainAverages[key] > maxScore) {
-          maxScore = domainAverages[key];
-          topDomainKey = key;
+        if (myDomainScores[key] > myMaxScore) {
+          myMaxScore = myDomainScores[key];
+          myTopDomainKey = key;
         }
-        if (domainAverages[key] < minScore) {
-          minScore = domainAverages[key];
-          lowDomainKey = key;
+        if (myDomainScores[key] < myMinScore) {
+          myMinScore = myDomainScores[key];
+          myLowDomainKey = key;
         }
       });
 
-      document.getElementById("kpiTopDomain").innerText = topDomainKey;
-      document.getElementById("kpiTopDomainScore").innerText = `평균 ${maxScore.toFixed(2)}점 (${DOMAIN_INFO[topDomainKey].name.replace(/^[0-9]\.\s*/, '')})`;
-      document.getElementById("kpiLowDomain").innerText = lowDomainKey;
-      document.getElementById("kpiLowDomainScore").innerText = `평균 ${minScore.toFixed(2)}점 (우선 개선 권장)`;
+      document.getElementById("kpiTopDomain").innerText = myTopDomainKey;
+      document.getElementById("kpiTopDomainScore").innerText = `진단자 ${myMaxScore.toFixed(2)}점 (평균 ${domainAverages[myTopDomainKey].toFixed(2)}점)`;
+      document.getElementById("kpiLowDomain").innerText = myLowDomainKey;
+      document.getElementById("kpiLowDomainScore").innerText = `진단자 ${myMinScore.toFixed(2)}점 (평균 ${domainAverages[myLowDomainKey].toFixed(2)}점)`;
 
-      // 4. 5대 영역 가로 막대 그래프 렌더링
-      renderDomainBars(domainAverages);
+      // 5. 5대 영역 듀얼 가로 막대 그래프 렌더링 (진단자 vs 전체평균)
+      renderDomainBars(domainAverages, myDomainScores, activeRespondent);
 
-      // 5. 5대 영역별 심층 분석 및 실천 Action Plan 카드 렌더링
-      renderDomainActionPlans(domainAverages);
+      // 6. 5대 영역별 심층 분석 및 진단자 맞춤형 실천 Action Plan 카드 렌더링
+      renderDomainActionPlans(domainAverages, myDomainScores, activeRespondent);
 
-      // 6. 문항별 상세 테이블 렌더링
-      renderQuestionTable(questionAverages);
+      // 7. 20개 문항별 상세 비교 테이블 렌더링
+      renderQuestionTable(questionAverages, myQuestionScores);
 
-      // 7. 주관식 피드백 리스트 렌더링
+      // 8. 주관식 피드백 리스트 렌더링
       renderEssayFeedback(filteredResponses);
     }
 
     /**
-     * 5대 영역 가로 막대 그래프 렌더링
+     * 5대 영역 가로 막대 그래프 렌더링 (진단자 점수 vs 전체 평균 듀얼 비교)
      */
-    function renderDomainBars(domainAverages) {
+    function renderDomainBars(domainAverages, myDomainScores, activeRespondent) {
       const container = document.getElementById("domainBarsContainer");
       if (!container) return;
 
       container.innerHTML = Object.keys(DOMAIN_INFO).map(domainKey => {
         const info = DOMAIN_INFO[domainKey];
-        const score = (domainAverages[domainKey] || 0).toFixed(2);
-        const percent = Math.min(100, Math.round((score / 5.0) * 100));
+        const myScore = Number((myDomainScores[domainKey] || 0).toFixed(2));
+        const avgScore = Number((domainAverages[domainKey] || 0).toFixed(2));
+        const gap = Number((myScore - avgScore).toFixed(2));
 
-        let gradeBadge = "보통";
-        if (score >= 4.2) gradeBadge = "탁월 (Advanced)";
-        else if (score >= 3.6) gradeBadge = "우수 (Proficient)";
-        else if (score >= 3.0) gradeBadge = "양호 (Developing)";
-        else gradeBadge = "집중 보완 (Foundational)";
+        const myPercent = Math.min(100, Math.round((myScore / 5.0) * 100));
+        const avgPercent = Math.min(100, Math.round((avgScore / 5.0) * 100));
+
+        let gapPillHtml = "";
+        if (gap > 0) {
+          gapPillHtml = `<span class="gap-pill positive">▲ +${gap.toFixed(2)}점 (평균 상회)</span>`;
+        } else if (gap < 0) {
+          gapPillHtml = `<span class="gap-pill negative">▼ ${gap.toFixed(2)}점 (보완 권장)</span>`;
+        } else {
+          gapPillHtml = `<span class="gap-pill equal">● 0.00점 (평균 일치)</span>`;
+        }
+
+        let myGradeText = "보통";
+        if (myScore >= 4.2) myGradeText = "탁월 (Advanced)";
+        else if (myScore >= 3.6) myGradeText = "우수 (Proficient)";
+        else if (myScore >= 3.0) myGradeText = "양호 (Developing)";
+        else myGradeText = "집중 보완 (Foundational)";
 
         return `
           <div class="domain-bar-row">
@@ -2699,19 +2891,45 @@
                 <span class="domain-title-text">${info.name}</span>
                 <span style="font-size: 0.8rem; color: #64748b;">(문항 ${info.questions.join(', ')}번)</span>
               </div>
-              <div style="text-align: right;">
-                <span class="domain-score-text">${score}</span>
-                <span class="domain-score-sub"> / 5.00 (${gradeBadge})</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                ${gapPillHtml}
+                <span style="font-size: 0.86rem; font-weight: 700; color: #475569;">${myGradeText}</span>
               </div>
             </div>
 
-            <!-- 프로그레스 가로 바 -->
-            <div class="bar-track">
-              <div class="bar-fill" style="width: ${percent}%; background: ${info.hexColor};"></div>
+            <!-- 듀얼 비교 바 차트 영역 -->
+            <div class="dual-bars-wrapper">
+              <!-- 1) 진단 당사자 바 -->
+              <div class="dual-bar-item">
+                <div class="dual-bar-label">
+                  <span>👤</span>
+                  <span style="font-weight: 800; color: #4338ca;">${escapeHtml(activeRespondent.respondentName)}:</span>
+                </div>
+                <div class="dual-bar-track">
+                  <div class="bar-fill" style="width: ${myPercent}%; background: ${info.hexColor};"></div>
+                </div>
+                <div class="dual-bar-score" style="color: #4338ca;">
+                  <strong>${myScore.toFixed(2)}점</strong>
+                </div>
+              </div>
+
+              <!-- 2) 전체 그룹 종합 평균 바 -->
+              <div class="dual-bar-item">
+                <div class="dual-bar-label" style="color: #64748b;">
+                  <span>🌐</span>
+                  <span>전체 평균:</span>
+                </div>
+                <div class="dual-bar-track">
+                  <div class="bar-fill" style="width: ${avgPercent}%; background: #94a3b8;"></div>
+                </div>
+                <div class="dual-bar-score" style="color: #64748b; font-weight: 600;">
+                  ${avgScore.toFixed(2)}점
+                </div>
+              </div>
             </div>
 
             <div class="domain-guide-text">
-              <strong>💡 핵심 지침:</strong> ${info.desc}
+              <strong>💡 영역 핵심 가이드:</strong> ${info.desc}
             </div>
           </div>
         `;
@@ -2719,9 +2937,9 @@
     }
 
     /**
-     * 5대 영역별 심층 분석 및 실천 Action Plan 카드 렌더링
+     * 5대 영역별 심층 분석 및 진단 당사자 맞춤형 실천 Action Plan 카드 렌더링
      */
-    function renderDomainActionPlans(domainAverages) {
+    function renderDomainActionPlans(domainAverages, myDomainScores, activeRespondent) {
       const container = document.getElementById("domainActionPlansContainer");
       if (!container) return;
 
@@ -2734,10 +2952,56 @@
           lowDiagnosis: "지속적인 관심과 실천 지침 도입이 권장됩니다.",
           actionSteps: ["팀원들과 협의하여 개선 프로세스를 수립하세요."]
         };
-        const score = (domainAverages[domainKey] || 0).toFixed(2);
-        const isHigh = score >= 3.8;
-        const diagnosis = isHigh ? guidance.highDiagnosis : guidance.lowDiagnosis;
-        const diagnosisColor = isHigh ? "#16a34a" : "#ea580c";
+
+        const myScore = Number((myDomainScores[domainKey] || 0).toFixed(2));
+        const avgScore = Number((domainAverages[domainKey] || 0).toFixed(2));
+        const gap = Number((myScore - avgScore).toFixed(2));
+
+        // 진단 당사자의 점수 및 전체 평균 대비 격차를 기반으로 맞춤형 진단 도출
+        const isSuperior = (myScore >= 4.0 || (myScore >= 3.6 && gap >= 0.25));
+        const isLow = (myScore < 3.2 || gap <= -0.4);
+
+        let statusTitle = "";
+        let diagnosisText = "";
+        let diagnosisColor = "#16a34a";
+        let boxBg = "#f0fdf4";
+        let actionListTitle = "";
+        let customActionSteps = [];
+
+        if (isSuperior) {
+          statusTitle = `🌟 [${escapeHtml(activeRespondent.respondentName)}] 님의 핵심 강점 역량`;
+          diagnosisColor = "#16a34a";
+          boxBg = "#f0fdf4";
+          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>+${gap.toFixed(2)}점</strong>)을 크게 상회하는 탁월한 핵심 강점 영역입니다. ${guidance.highDiagnosis}`;
+          actionListTitle = "📋 강점 극대화 및 팀 전파 실천 지침 (Action Steps)";
+          customActionSteps = [
+            `<strong>노하우 표준화:</strong> 진단자님의 우수한 ${info.name.replace(/^[0-9]\.\s*/, '')} 실천 노하우를 팀 가이드라인으로 정리해 공유하세요.`,
+            guidance.actionSteps[0],
+            guidance.actionSteps[1]
+          ];
+        } else if (isLow) {
+          statusTitle = `🌱 [${escapeHtml(activeRespondent.respondentName)}] 님의 우선 보완 집중 과제`;
+          diagnosisColor = "#ea580c";
+          boxBg = "#fff7ed";
+          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>${gap.toFixed(2)}점</strong>) 대비 실무 체계화가 우선 필요한 집중 보완 영역입니다. ${guidance.lowDiagnosis}`;
+          actionListTitle = "📋 우선 개선 및 현장 체계화 실천 지침 (Action Steps)";
+          customActionSteps = [
+            guidance.actionSteps[0],
+            guidance.actionSteps[1],
+            guidance.actionSteps[2]
+          ];
+        } else {
+          statusTitle = `⚡ [${escapeHtml(activeRespondent.respondentName)}] 님의 실무 적용 단계`;
+          diagnosisColor = "#0284c7";
+          boxBg = "#f0f9ff";
+          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>(전체 평균 ${avgScore.toFixed(2)}점, 격차 ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}점)으로 실무에 안정적으로 적용하고 계십니다. 정기적인 템플릿화와 피드백 루틴을 강화하면 최상위 리더십 역량으로 도약할 수 있습니다.`;
+          actionListTitle = "📋 역량 고도화 및 루틴 체계화 실천 지침 (Action Steps)";
+          customActionSteps = [
+            guidance.actionSteps[0],
+            guidance.actionSteps[1],
+            guidance.actionSteps[2]
+          ];
+        }
 
         return `
           <div class="action-plan-card" style="border-top: 4px solid ${info.hexColor};">
@@ -2747,22 +3011,28 @@
                   <span>${guidance.icon}</span>
                   <span>${info.name}</span>
                 </div>
-                <span class="action-score-badge" style="color: ${info.hexColor};">
-                  평균 ${score}점
-                </span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span class="action-score-badge" style="color: #4338ca; background: #e0e7ff; border-color: #c7d2fe;">
+                    👤 당사자 ${myScore.toFixed(2)}점
+                  </span>
+                  <span class="action-score-badge" style="color: #64748b;">
+                    🌐 평균 ${avgScore.toFixed(2)}점
+                  </span>
+                </div>
               </div>
 
-              <div class="action-diagnosis-box" style="border-left-color: ${diagnosisColor};">
-                <strong style="color: ${diagnosisColor};">${isHigh ? '🌟 강점 진단:' : '⚠️ 개선 포인트:'}</strong> ${diagnosis}
+              <div class="action-diagnosis-box" style="border-left-color: ${diagnosisColor}; background: ${boxBg};">
+                <strong style="color: ${diagnosisColor};">${statusTitle}:</strong>
+                <div style="margin-top: 4px; color: #334155;">${diagnosisText}</div>
               </div>
 
               <div class="action-list-title">
                 <span>📋</span>
-                <span>팀장 실천 지침 (Action Steps)</span>
+                <span>${actionListTitle}</span>
               </div>
 
               <ul class="action-steps-list">
-                ${guidance.actionSteps.map(step => `
+                ${customActionSteps.map(step => `
                   <li class="action-step-item">
                     <span class="action-step-icon">✔</span>
                     <span>${step}</span>
@@ -2776,27 +3046,41 @@
     }
 
     /**
-     * 문항별 상세 분석 테이블 렌더링
+     * 문항별 상세 분석 테이블 렌더링 (진단자 점수 vs 전체 평균 대조)
      */
-    function renderQuestionTable(questionAverages) {
+    function renderQuestionTable(questionAverages, myQuestionScores) {
       const tbody = document.getElementById("questionScoreTableBody");
       if (!tbody) return;
 
       tbody.innerHTML = ASSESSMENT_QUESTIONS.map(q => {
-        const avg = (questionAverages[q.id] || 0).toFixed(2);
+        const myScore = myQuestionScores[q.id] || 0;
+        const avgScore = Number((questionAverages[q.id] || 0).toFixed(2));
+        const gap = Number((myScore - avgScore).toFixed(2));
         const domain = DOMAIN_INFO[q.domain];
         
-        let levelText = `<span style="color:#64748b;">보통</span>`;
-        if (avg >= 4.0) levelText = `<span style="color:#16a34a; font-weight:700;">🟢 강점</span>`;
-        else if (avg <= 3.0 && avg > 0) levelText = `<span style="color:#dc2626; font-weight:700;">🔴 개선필요</span>`;
+        let gapHtml = `<span style="color:#64748b; font-weight:600;">0.00</span>`;
+        if (gap > 0) {
+          gapHtml = `<span style="color:#16a34a; font-weight:800;">+${gap.toFixed(2)} ▲</span>`;
+        } else if (gap < 0) {
+          gapHtml = `<span style="color:#dc2626; font-weight:800;">${gap.toFixed(2)} ▼</span>`;
+        }
+
+        let evalBadge = `<span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700;">🟡 보통</span>`;
+        if (myScore >= 4) {
+          evalBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🟢 강점</span>`;
+        } else if (myScore <= 2 && myScore > 0) {
+          evalBadge = `<span class="badge" style="background:#fee2e2; color:#b91c1c; font-weight:700;">🔴 보완</span>`;
+        }
 
         return `
           <tr>
             <td style="font-weight: 700; color: #475569;">Q${q.id}</td>
             <td><span class="badge ${domain.badgeClass}">${q.domain}</span></td>
-            <td>${q.text}</td>
-            <td style="text-align: center; font-weight: 800; color: #0f172a;">${avg}점</td>
-            <td style="text-align: center;">${levelText}</td>
+            <td style="line-height: 1.45;">${q.text}</td>
+            <td style="text-align: center; font-weight: 800; color: #4338ca; background: rgba(224, 231, 255, 0.2);">${myScore}점</td>
+            <td style="text-align: center; font-weight: 700; color: #475569;">${avgScore.toFixed(2)}점</td>
+            <td style="text-align: center;">${gapHtml}</td>
+            <td style="text-align: center;">${evalBadge}</td>
           </tr>
         `;
       }).join("");
@@ -2854,7 +3138,7 @@
       }
       const tbody = document.getElementById("questionScoreTableBody");
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 24px; color: var(--text-muted);">수집된 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">수집된 데이터가 없습니다.</td></tr>`;
       }
       const essayContainer = document.getElementById("essayFeedbackContainer");
       if (essayContainer) {
