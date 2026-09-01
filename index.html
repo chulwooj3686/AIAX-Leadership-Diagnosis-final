@@ -1382,23 +1382,42 @@
         </div>
       </div>
 
-      <!-- 응답자 정보 입력 (선택) -->
-      <div class="glass-panel" style="padding: 20px 24px; margin-bottom: 20px;">
-        <div class="form-grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="respondentName">응답자 성명 / 닉네임 (선택)</label>
-            <input type="text" id="respondentName" class="form-input" placeholder="예: 김리더" />
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="respondentDept">소속 부서 / 직책 (선택)</label>
-            <input type="text" id="respondentDept" class="form-input" placeholder="예: 전략기획팀 / 팀장" />
-          </div>
-        </div>
-      </div>
-
       <!-- 설문 응답 폼 -->
       <form id="surveyAnswerForm" onsubmit="handleSurveySubmit(event)">
         
+        <!-- 응답자 기본 정보 입력 (필수 입력: 회사명, 이름, 직책 3가지) -->
+        <div class="glass-panel" style="padding: 22px 24px; margin-bottom: 22px; border-top: 3px solid #6366f1;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #e0e7ff; color: #4338ca; font-size: 0.95rem;">👤</span>
+              <span style="font-size: 1.02rem; font-weight: 800; color: #0f172a;">진단 응답자 기본 정보</span>
+            </div>
+            <span style="font-size: 0.82rem; color: #ef4444; font-weight: 700;">* 3가지 항목 모두 필수 입력입니다</span>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="respondentCompany">회사명<span class="required">*</span></label>
+              <input type="text" id="respondentCompany" class="form-input" placeholder="예: (주)인공지능혁신" required />
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="respondentName">이름 (성명)<span class="required">*</span></label>
+              <input type="text" id="respondentName" class="form-input" placeholder="예: 홍길동" required />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="respondentRole">직책<span class="required">*</span></label>
+              <select id="respondentRole" class="form-select" required>
+                <option value="" disabled selected>직책을 선택해 주세요 (필수)</option>
+                <option value="팀장">팀장</option>
+                <option value="팀원">팀원</option>
+                <option value="본부장 임원이상">본부장 임원이상</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- 20개 객관식 문항 동적 렌더링 컨테이너 -->
         <div id="surveyQuestionsContainer"></div>
 
@@ -1438,14 +1457,21 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.85); padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
-            <label for="dashRespondentFilter" style="font-size: 0.84rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap;">👤 분석 대상 진단자:</label>
+          <!-- [운영자 모드 전용] 분석 대상 진단자 선택 드롭다운 -->
+          <div id="dashRespondentFilterWrap" style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.85); padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
+            <label for="dashRespondentFilter" style="font-size: 0.84rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap;">👤 [운영자] 분석 대상 진단자:</label>
             <select id="dashRespondentFilter" class="form-select" style="width: auto; min-width: 170px; padding: 4px 8px; font-size: 0.86rem; height: 32px; font-weight: 600;" onchange="handleRespondentFilterChange()">
               <!-- JS로 동적 렌더링 -->
             </select>
           </div>
 
-          <span class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.82rem; padding: 7px 14px; font-weight: 700; border-radius: 9999px;">
+          <!-- [교육생 모드 전용] 본인 진단자 안내 뱃지 -->
+          <div id="dashStudentRespondentInfo" style="display: none; align-items: center; gap: 8px; background: #eef2ff; padding: 6px 14px; border-radius: 8px; border: 1px solid #c7d2fe; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
+            <span style="font-size: 0.84rem; font-weight: 700; color: #4338ca;">👤 나의 진단 정보:</span>
+            <span id="dashStudentRespondentName" style="font-size: 0.86rem; font-weight: 800; color: #1e1b4b;">-</span>
+          </div>
+
+          <span class="badge" id="dashComparisonBadge" style="background: #e0e7ff; color: #4338ca; font-size: 0.82rem; padding: 7px 14px; font-weight: 700; border-radius: 9999px;">
             ⚡ 진단자 vs 전체 종합평균 비교 분석
           </span>
         </div>
@@ -1460,7 +1486,7 @@
         </div>
 
         <div class="kpi-card" style="border-top: 3px solid #6366f1;">
-          <span class="kpi-title">🎯 진단자(당사자) 점수</span>
+          <span class="kpi-title" id="kpiMyScoreTitle">🎯 진단자(당사자) 점수</span>
           <span class="kpi-value" id="kpiMyScore" style="color: #4f46e5;">0.0 <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span></span>
           <span class="kpi-sub" id="kpiMyScoreGap">전체 평균 대비 0.0점</span>
         </div>
@@ -1472,13 +1498,13 @@
         </div>
 
         <div class="kpi-card">
-          <span class="kpi-title">🏆 진단자 최우수 강점</span>
+          <span class="kpi-title" id="kpiTopDomainTitle">🏆 진단자 최우수 강점</span>
           <span class="kpi-value" id="kpiTopDomain" style="color: #2563eb; font-size: 1.25rem;">-</span>
           <span class="kpi-sub" id="kpiTopDomainScore">최고 점수 영역</span>
         </div>
 
         <div class="kpi-card">
-          <span class="kpi-title">🌱 진단자 보완 집중</span>
+          <span class="kpi-title" id="kpiLowDomainTitle">🌱 진단자 보완 집중</span>
           <span class="kpi-value" id="kpiLowDomain" style="color: #ea580c; font-size: 1.25rem;">-</span>
           <span class="kpi-sub" id="kpiLowDomainScore">우선 개선 권장</span>
         </div>
@@ -1493,7 +1519,7 @@
           <div style="display: flex; gap: 14px; font-size: 0.82rem; font-weight: 700; color: #475569;">
             <span style="display: flex; align-items: center; gap: 6px;">
               <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #6366f1;"></span>
-              <span>👤 진단 당사자 점수</span>
+              <span id="dashBarLegendTarget">👤 진단 당사자 점수</span>
             </span>
             <span style="display: flex; align-items: center; gap: 6px;">
               <span style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #94a3b8;"></span>
@@ -1537,10 +1563,10 @@
                 <th style="width: 65px;">번호</th>
                 <th style="width: 140px;">영역</th>
                 <th>진단 문항 내용</th>
-                <th style="width: 100px; text-align: center;">👤 진단자</th>
+                <th style="width: 100px; text-align: center;" id="thRespondentHeader">👤 진단자</th>
                 <th style="width: 100px; text-align: center;">🌐 전체평균</th>
                 <th style="width: 100px; text-align: center;">격차 (Gap)</th>
-                <th style="width: 110px; text-align: center;">진단자 판정</th>
+                <th style="width: 110px; text-align: center;" id="thEvaluationHeader">진단자 판정</th>
               </tr>
             </thead>
             <tbody id="questionScoreTableBody">
@@ -1843,6 +1869,17 @@
       const roleToggleBtn = document.getElementById("roleToggleBtn");
       const appSubtitleText = document.getElementById("appSubtitleText");
 
+      // 대시보드 역할별 UI 제어 (분석 대상자 변경 셀렉트는 운영자 모드 전용)
+      const respondentFilterWrap = document.getElementById("dashRespondentFilterWrap");
+      const studentRespondentInfo = document.getElementById("dashStudentRespondentInfo");
+      const comparisonBadge = document.getElementById("dashComparisonBadge");
+      const kpiMyScoreTitle = document.getElementById("kpiMyScoreTitle");
+      const kpiTopDomainTitle = document.getElementById("kpiTopDomainTitle");
+      const kpiLowDomainTitle = document.getElementById("kpiLowDomainTitle");
+      const dashBarLegendTarget = document.getElementById("dashBarLegendTarget");
+      const thRespondentHeader = document.getElementById("thRespondentHeader");
+      const thEvaluationHeader = document.getElementById("thEvaluationHeader");
+
       if (currentUserRole === "student") {
         // 교육생 화면: [설문 생성 및 배포] 탭 숨김 (오직 2개 탭만 제공)
         if (tab1) tab1.style.display = "none";
@@ -1865,6 +1902,17 @@
         if (appSubtitleText) {
           appSubtitleText.innerText = "조직의 AI 리더십 5대 역량 진단에 참여하고 즉각적인 분석 피드백을 확인하세요.";
         }
+
+        // 교육생 모드 대시보드: 진단자 변경 셀렉트 숨김, 본인 정보 고정 표시
+        if (respondentFilterWrap) respondentFilterWrap.style.display = "none";
+        if (studentRespondentInfo) studentRespondentInfo.style.display = "inline-flex";
+        if (comparisonBadge) comparisonBadge.innerHTML = "⚡ 나의 점수 vs 전체 종합평균 비교 분석";
+        if (kpiMyScoreTitle) kpiMyScoreTitle.innerText = "🎯 나의(본인) 진단 점수";
+        if (kpiTopDomainTitle) kpiTopDomainTitle.innerText = "🏆 나의 최우수 강점";
+        if (kpiLowDomainTitle) kpiLowDomainTitle.innerText = "🌱 나의 보완 집중";
+        if (dashBarLegendTarget) dashBarLegendTarget.innerText = "👤 나의(본인) 점수";
+        if (thRespondentHeader) thRespondentHeader.innerText = "👤 나의 점수";
+        if (thEvaluationHeader) thEvaluationHeader.innerText = "나의 판정";
 
         // 만약 현재 1번(설문 생성) 화면에 있었다면 2번(설문 응답) 화면으로 즉시 전환
         const screen1 = document.getElementById("screen1");
@@ -1895,6 +1943,23 @@
         if (appSubtitleText) {
           appSubtitleText.innerText = "조직의 인공지능 전환(AX) 리더십을 5대 핵심 영역(총 20문항)으로 진단하고 즉각적인 피드백을 제공합니다.";
         }
+
+        // 운영자 모드 대시보드: 분석 대상 진단자 변경 셀렉트 활성화
+        if (respondentFilterWrap) respondentFilterWrap.style.display = "inline-flex";
+        if (studentRespondentInfo) studentRespondentInfo.style.display = "none";
+        if (comparisonBadge) comparisonBadge.innerHTML = "⚡ [운영자] 진단자 vs 전체 종합평균 비교 분석";
+        if (kpiMyScoreTitle) kpiMyScoreTitle.innerText = "🎯 진단자(당사자) 점수";
+        if (kpiTopDomainTitle) kpiTopDomainTitle.innerText = "🏆 진단자 최우수 강점";
+        if (kpiLowDomainTitle) kpiLowDomainTitle.innerText = "🌱 진단자 보완 집중";
+        if (dashBarLegendTarget) dashBarLegendTarget.innerText = "👤 진단 당사자 점수";
+        if (thRespondentHeader) thRespondentHeader.innerText = "👤 진단자";
+        if (thEvaluationHeader) thEvaluationHeader.innerText = "진단자 판정";
+      }
+
+      // 대시보드 화면(screen3)이 표시 중인 경우 즉시 동기화 재렌더링
+      const screen3 = document.getElementById("screen3");
+      if (screen3 && screen3.style.display !== "none") {
+        renderDashboard();
       }
     }
 
@@ -2591,12 +2656,48 @@
     }
 
     /**
-     * 설문 응답 제출 핸들러
+     * 설문 응답 제출 핸들러 (회사명, 이름, 직책 필수 입력 검증)
      */
     function handleSurveySubmit(event) {
       event.preventDefault();
 
-      // 20개 문항 모두 응답했는지 유효성 검증
+      const compInput = document.getElementById("respondentCompany");
+      const nameInput = document.getElementById("respondentName");
+      const roleSelect = document.getElementById("respondentRole");
+
+      const company = compInput ? compInput.value.trim() : "";
+      const name = nameInput ? nameInput.value.trim() : "";
+      const role = roleSelect ? roleSelect.value.trim() : "";
+
+      // 1. 응답자 3대 필수 정보 유효성 검증
+      if (!company) {
+        showToast("회사명을 반드시 입력해 주세요.");
+        if (compInput) {
+          compInput.focus();
+          compInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
+      if (!name) {
+        showToast("이름(성명)을 반드시 입력해 주세요.");
+        if (nameInput) {
+          nameInput.focus();
+          nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
+      if (!role) {
+        showToast("직책(팀장 / 팀원 / 본부장 임원이상)을 선택해 주세요.");
+        if (roleSelect) {
+          roleSelect.focus();
+          roleSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
+      // 2. 20개 문항 모두 응답했는지 유효성 검증
       const answeredIds = Object.keys(currentSurveyAnswers).map(Number);
       const missingQuestions = ASSESSMENT_QUESTIONS.filter(q => !answeredIds.includes(q.id));
 
@@ -2611,15 +2712,15 @@
       }
 
       const activeClassId = localStorage.getItem(STORAGE_KEYS.ACTIVE_CLASS_ID) || (getStoredClasses()[0] ? getStoredClasses()[0].id : "DEFAULT");
-      const name = document.getElementById("respondentName").value.trim() || "익명 참가자";
-      const dept = document.getElementById("respondentDept").value.trim() || "일반";
-      const essay = document.getElementById("essayAnswer").value.trim();
+      const essay = document.getElementById("essayAnswer") ? document.getElementById("essayAnswer").value.trim() : "";
 
       const newResponse = {
         id: "RES-" + Date.now(),
         classId: activeClassId,
+        respondentCompany: company,
         respondentName: name,
-        respondentDept: dept,
+        respondentRole: role,
+        respondentDept: `${company} · ${role}`,
         answers: { ...currentSurveyAnswers },
         essay: essay,
         submittedAt: new Date().toISOString()
@@ -2647,9 +2748,10 @@
       currentSurveyAnswers = {};
       document.querySelectorAll(".scale-option-btn").forEach(btn => btn.classList.remove("selected"));
       document.querySelectorAll(".survey-q-card").forEach(card => card.classList.remove("answered"));
-      document.getElementById("respondentName").value = "";
-      document.getElementById("respondentDept").value = "";
-      document.getElementById("essayAnswer").value = "";
+      if (document.getElementById("respondentCompany")) document.getElementById("respondentCompany").value = "";
+      if (document.getElementById("respondentName")) document.getElementById("respondentName").value = "";
+      if (document.getElementById("respondentRole")) document.getElementById("respondentRole").value = "";
+      if (document.getElementById("essayAnswer")) document.getElementById("essayAnswer").value = "";
       updateProgressBar();
     }
 
@@ -2731,14 +2833,19 @@
       const lastRespondentId = localStorage.getItem(STORAGE_KEYS.LAST_RESPONDENT_ID);
       let selectedRespId = localStorage.getItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID);
 
-      // 선택된 응답자가 현재 필터 목록에 존재하는지 확인
-      let activeRespondent = filteredResponses.find(r => r.id === selectedRespId);
-      if (!activeRespondent) {
-        // 마지막 제출자가 목록에 있으면 우선 선택, 없으면 첫 번째 응답자 선택
-        activeRespondent = filteredResponses.find(r => r.id === lastRespondentId) || filteredResponses[0];
-        selectedRespId = activeRespondent ? activeRespondent.id : null;
-        if (selectedRespId) {
-          localStorage.setItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID, selectedRespId);
+      let activeRespondent = null;
+      if (currentUserRole === "student") {
+        // [교육생 모드] 본인의 제출 응답(lastRespondentId)만 엄격하게 고정하여 전체 평균 대비 본인 점수만 확인
+        activeRespondent = filteredResponses.find(r => r.id === lastRespondentId) || filteredResponses[filteredResponses.length - 1] || filteredResponses[0];
+      } else {
+        // [운영자 모드] 운영자가 드롭다운에서 선택한 진단자 분석
+        activeRespondent = filteredResponses.find(r => r.id === selectedRespId);
+        if (!activeRespondent) {
+          activeRespondent = filteredResponses.find(r => r.id === lastRespondentId) || filteredResponses[0];
+          selectedRespId = activeRespondent ? activeRespondent.id : null;
+          if (selectedRespId) {
+            localStorage.setItem(STORAGE_KEYS.SELECTED_RESPONDENT_ID, selectedRespId);
+          }
         }
       }
 
@@ -2747,8 +2854,20 @@
           const isLatest = (r.id === lastRespondentId);
           const isSelected = (r.id === activeRespondent.id);
           const labelPrefix = isLatest ? "★ [최근진단] " : "";
-          return `<option value="${r.id}" ${isSelected ? "selected" : ""}>${labelPrefix}${escapeHtml(r.respondentName)} (${escapeHtml(r.respondentDept || '일반')})</option>`;
+          const companyRoleText = (r.respondentCompany && r.respondentRole)
+            ? `${r.respondentCompany} · ${r.respondentRole}`
+            : (r.respondentRole || r.respondentDept || r.respondentCompany || '소속 미지정');
+          return `<option value="${r.id}" ${isSelected ? "selected" : ""}>${labelPrefix}${escapeHtml(r.respondentName)} (${escapeHtml(companyRoleText)})</option>`;
         }).join("");
+      }
+
+      // 교육생 전용 안내 뱃지 텍스트 갱신
+      const studentRespNameElem = document.getElementById("dashStudentRespondentName");
+      if (studentRespNameElem && activeRespondent) {
+        const companyRoleText = (activeRespondent.respondentCompany && activeRespondent.respondentRole)
+          ? `${activeRespondent.respondentCompany} · ${activeRespondent.respondentRole}`
+          : (activeRespondent.respondentRole || activeRespondent.respondentDept || activeRespondent.respondentCompany || '');
+        studentRespNameElem.innerText = `${activeRespondent.respondentName}${companyRoleText ? ' (' + companyRoleText + ')' : ''}`;
       }
 
       // 3. 20개 문항별 전체 평균 및 진단자 개별 점수 계산
@@ -2795,16 +2914,20 @@
       const myOverallAvg = Number((totalMyOverallSum / domainKeys.length).toFixed(2));
       const overallGap = Number((myOverallAvg - overallAvg).toFixed(2));
 
+      const activeRespondentTag = (activeRespondent.respondentCompany && activeRespondent.respondentRole)
+        ? `${activeRespondent.respondentName} (${activeRespondent.respondentCompany} · ${activeRespondent.respondentRole})`
+        : `${activeRespondent.respondentName} (${activeRespondent.respondentRole || activeRespondent.respondentDept || '진단자'})`;
+
       // 진단자 점수 KPI 업데이트
       document.getElementById("kpiMyScore").innerHTML = `${myOverallAvg.toFixed(2)} <span style="font-size: 1rem; font-weight: normal; color: var(--text-muted);">/ 5.0</span>`;
       const myGapElem = document.getElementById("kpiMyScoreGap");
       if (myGapElem) {
         if (overallGap > 0) {
-          myGapElem.innerHTML = `<span style="color: #16a34a; font-weight: 700;">전체 대비 +${overallGap.toFixed(2)}점 상회 ▲</span> (${escapeHtml(activeRespondent.respondentName)})`;
+          myGapElem.innerHTML = `<span style="color: #16a34a; font-weight: 700;">전체 대비 +${overallGap.toFixed(2)}점 상회 ▲</span> (${escapeHtml(activeRespondent.respondentName)} ${escapeHtml(activeRespondent.respondentRole ? '· ' + activeRespondent.respondentRole : '')})`;
         } else if (overallGap < 0) {
-          myGapElem.innerHTML = `<span style="color: #dc2626; font-weight: 700;">전체 대비 ${overallGap.toFixed(2)}점 보완 권장 ▼</span> (${escapeHtml(activeRespondent.respondentName)})`;
+          myGapElem.innerHTML = `<span style="color: #dc2626; font-weight: 700;">전체 대비 ${overallGap.toFixed(2)}점 보완 권장 ▼</span> (${escapeHtml(activeRespondent.respondentName)} ${escapeHtml(activeRespondent.respondentRole ? '· ' + activeRespondent.respondentRole : '')})`;
         } else {
-          myGapElem.innerHTML = `<span style="color: #475569; font-weight: 700;">전체 평균과 동일 ●</span> (${escapeHtml(activeRespondent.respondentName)})`;
+          myGapElem.innerHTML = `<span style="color: #475569; font-weight: 700;">전체 평균과 동일 ●</span> (${escapeHtml(activeRespondent.respondentName)} ${escapeHtml(activeRespondent.respondentRole ? '· ' + activeRespondent.respondentRole : '')})`;
         }
       }
 
@@ -2899,11 +3022,11 @@
 
             <!-- 듀얼 비교 바 차트 영역 -->
             <div class="dual-bars-wrapper">
-              <!-- 1) 진단 당사자 바 -->
+              <!-- 1) 진단 당사자 / 나의 점수 바 -->
               <div class="dual-bar-item">
                 <div class="dual-bar-label">
                   <span>👤</span>
-                  <span style="font-weight: 800; color: #4338ca;">${escapeHtml(activeRespondent.respondentName)}:</span>
+                  <span style="font-weight: 800; color: #4338ca;">${currentUserRole === 'student' ? '나의 점수' : escapeHtml(activeRespondent.respondentName) + (activeRespondent.respondentRole ? ' (' + escapeHtml(activeRespondent.respondentRole) + ')' : '')}:</span>
                 </div>
                 <div class="dual-bar-track">
                   <div class="bar-fill" style="width: ${myPercent}%; background: ${info.hexColor};"></div>
@@ -2943,6 +3066,9 @@
       const container = document.getElementById("domainActionPlansContainer");
       if (!container) return;
 
+      const isStudent = (currentUserRole === "student");
+      const nameLabel = isStudent ? "나" : escapeHtml(activeRespondent.respondentName);
+
       container.innerHTML = Object.keys(DOMAIN_INFO).map(domainKey => {
         const info = DOMAIN_INFO[domainKey];
         const guidance = ACTION_GUIDANCE[domainKey] || {
@@ -2969,21 +3095,21 @@
         let customActionSteps = [];
 
         if (isSuperior) {
-          statusTitle = `🌟 [${escapeHtml(activeRespondent.respondentName)}] 님의 핵심 강점 역량`;
+          statusTitle = `🌟 [${nameLabel}] 님의 핵심 강점 역량`;
           diagnosisColor = "#16a34a";
           boxBg = "#f0fdf4";
-          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>+${gap.toFixed(2)}점</strong>)을 크게 상회하는 탁월한 핵심 강점 영역입니다. ${guidance.highDiagnosis}`;
+          diagnosisText = `${isStudent ? '나의 점수' : '진단 당사자 점수'}는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>+${gap.toFixed(2)}점</strong>)을 크게 상회하는 탁월한 핵심 강점 영역입니다. ${guidance.highDiagnosis}`;
           actionListTitle = "📋 강점 극대화 및 팀 전파 실천 지침 (Action Steps)";
           customActionSteps = [
-            `<strong>노하우 표준화:</strong> 진단자님의 우수한 ${info.name.replace(/^[0-9]\.\s*/, '')} 실천 노하우를 팀 가이드라인으로 정리해 공유하세요.`,
+            `<strong>노하우 표준화:</strong> ${isStudent ? '나의' : '진단자님의'} 우수한 ${info.name.replace(/^[0-9]\.\s*/, '')} 실천 노하우를 팀 가이드라인으로 정리해 공유하세요.`,
             guidance.actionSteps[0],
             guidance.actionSteps[1]
           ];
         } else if (isLow) {
-          statusTitle = `🌱 [${escapeHtml(activeRespondent.respondentName)}] 님의 우선 보완 집중 과제`;
+          statusTitle = `🌱 [${nameLabel}] 님의 우선 보완 집중 과제`;
           diagnosisColor = "#ea580c";
           boxBg = "#fff7ed";
-          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>${gap.toFixed(2)}점</strong>) 대비 실무 체계화가 우선 필요한 집중 보완 영역입니다. ${guidance.lowDiagnosis}`;
+          diagnosisText = `${isStudent ? '나의 점수' : '진단 당사자 점수'}는 <strong>${myScore.toFixed(2)}점</strong>으로 전체 평균(<strong>${avgScore.toFixed(2)}점</strong> 대비 <strong>${gap.toFixed(2)}점</strong>) 대비 실무 체계화가 우선 필요한 집중 보완 영역입니다. ${guidance.lowDiagnosis}`;
           actionListTitle = "📋 우선 개선 및 현장 체계화 실천 지침 (Action Steps)";
           customActionSteps = [
             guidance.actionSteps[0],
@@ -2991,10 +3117,10 @@
             guidance.actionSteps[2]
           ];
         } else {
-          statusTitle = `⚡ [${escapeHtml(activeRespondent.respondentName)}] 님의 실무 적용 단계`;
+          statusTitle = `⚡ [${nameLabel}] 님의 실무 적용 단계`;
           diagnosisColor = "#0284c7";
           boxBg = "#f0f9ff";
-          diagnosisText = `진단 당사자 점수는 <strong>${myScore.toFixed(2)}점</strong>(전체 평균 ${avgScore.toFixed(2)}점, 격차 ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}점)으로 실무에 안정적으로 적용하고 계십니다. 정기적인 템플릿화와 피드백 루틴을 강화하면 최상위 리더십 역량으로 도약할 수 있습니다.`;
+          diagnosisText = `${isStudent ? '나의 점수' : '진단 당사자 점수'}는 <strong>${myScore.toFixed(2)}점</strong>(전체 평균 ${avgScore.toFixed(2)}점, 격차 ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}점)으로 실무에 안정적으로 적용하고 계십니다. 정기적인 템플릿화와 피드백 루틴을 강화하면 최상위 리더십 역량으로 도약할 수 있습니다.`;
           actionListTitle = "📋 역량 고도화 및 루틴 체계화 실천 지침 (Action Steps)";
           customActionSteps = [
             guidance.actionSteps[0],
@@ -3013,10 +3139,10 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span class="action-score-badge" style="color: #4338ca; background: #e0e7ff; border-color: #c7d2fe;">
-                    👤 당사자 ${myScore.toFixed(2)}점
+                    👤 ${isStudent ? '나의 점수' : '당사자'} ${myScore.toFixed(2)}점
                   </span>
                   <span class="action-score-badge" style="color: #64748b;">
-                    🌐 평균 ${avgScore.toFixed(2)}점
+                    🌐 전체평균 ${avgScore.toFixed(2)}점
                   </span>
                 </div>
               </div>
@@ -3106,11 +3232,14 @@
 
       container.innerHTML = validEssays.map(r => {
         const dateStr = new Date(r.submittedAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        const companyRole = (r.respondentCompany && r.respondentRole)
+          ? `${r.respondentCompany} · ${r.respondentRole}`
+          : (r.respondentRole || r.respondentDept || r.respondentCompany || '소속 미지정');
         return `
           <div class="comment-card">
             <div class="comment-text">"${escapeHtml(r.essay)}"</div>
             <div class="comment-meta">
-              <span><strong>${escapeHtml(r.respondentName)}</strong> (${escapeHtml(r.respondentDept)})</span>
+              <span><strong>${escapeHtml(r.respondentName)}</strong> (${escapeHtml(companyRole)})</span>
               <span>${dateStr}</span>
             </div>
           </div>
@@ -3147,7 +3276,7 @@
     }
 
     /**
-     * 시연을 위한 가상 샘플 응답 5건 즉시 추가 함수 (20개 문항 지원)
+     * 시연을 위한 가상 샘플 응답 5건 즉시 추가 함수 (20개 문항 지원, 회사명/이름/직책 3대 속성 반영)
      */
     function generateSampleResponses() {
       const classes = getStoredClasses();
@@ -3155,8 +3284,9 @@
       const selectedClassId = (filterSelect && filterSelect.value !== "ALL") ? filterSelect.value : null;
       const activeId = selectedClassId || localStorage.getItem(STORAGE_KEYS.ACTIVE_CLASS_ID) || ((classes.length > 0) ? classes[0].id : "DEMO_CLASS");
 
+      const sampleCompanies = ["(주)미래테크", "글로벌AX솔루션", "현대혁신그룹", "한국AI네트웍스", "넥스트인사이트"];
       const sampleNames = ["강민우", "오승현", "유하나", "신동혁", "배소영"];
-      const sampleDepts = ["경영전략", "신사업기획", "고객경험혁신", "HRD", "데이터분석"];
+      const sampleRoles = ["팀장", "팀원", "본부장 임원이상", "팀장", "팀원"];
       const sampleEssays = [
         "AI 결과물 공정 평가 체크리스트와 팀원 1:1 코칭 시 활용할 수 있는 표준 프롬프트 라이브러리가 필요합니다.",
         "기존 관행 업무를 AI 친화적으로 재설계하면서 발생할 수 있는 보안 및 저작권 가이드라인을 팀원들에게 명확히 교육해야 합니다.",
@@ -3174,8 +3304,10 @@
         return {
           id: "RES-SAMPLE-" + Date.now() + "-" + i,
           classId: activeId,
-          respondentName: name + " 책임",
-          respondentDept: sampleDepts[i],
+          respondentCompany: sampleCompanies[i],
+          respondentName: name,
+          respondentRole: sampleRoles[i],
+          respondentDept: `${sampleCompanies[i]} · ${sampleRoles[i]}`,
           answers: randomAnswers,
           essay: sampleEssays[i],
           submittedAt: new Date(Date.now() - (i * 1800000)).toISOString()
@@ -3191,7 +3323,7 @@
     }
 
     /**
-     * CSV 형식으로 전체 응답 데이터 엑셀 다운로드 (한글 인코딩 BOM 지원, 20문항 & 5개 영역)
+     * CSV 형식으로 전체 응답 데이터 엑셀 다운로드 (한글 인코딩 BOM 지원, 회사명/이름/직책 분리, 20문항 & 5개 영역)
      */
     function downloadCSVReport() {
       const responses = getStoredResponses();
@@ -3204,13 +3336,14 @@
       const classMap = {};
       classes.forEach(c => { classMap[c.id] = c.name; });
 
-      // CSV 헤더 행 정의
+      // CSV 헤더 행 정의 (회사명, 이름, 직책 3가지 분리 표기)
       const headers = [
         "응답ID",
         "제출일시",
         "교육클래스명",
-        "응답자성명",
-        "소속부서",
+        "회사명",
+        "이름",
+        "직책",
         // 20개 문항
         "Q1_사실논리검증(EVAL)",
         "Q2_환각프롬프트확인(EVAL)",
@@ -3267,8 +3400,9 @@
           `"${r.id}"`,
           `"${dateFormatted}"`,
           `"${className}"`,
+          `"${r.respondentCompany || '-'}"`,
           `"${r.respondentName || '익명'}"`,
-          `"${r.respondentDept || '-'}"`,
+          `"${r.respondentRole || r.respondentDept || '-'}"`,
           ...qVals,
           evalAvg, conflictAvg, redesignAvg, peopleAvg, equalizeAvg, totalAvg,
           `"${safeEssay}"`
